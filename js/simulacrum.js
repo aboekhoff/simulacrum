@@ -1,5 +1,12 @@
 var game = Tetryon.create();
 
+// setup input here
+game.input.add.button('UP', Tetryon.Keyboard.UP);
+game.input.add.button('RIGHT', Tetryon.Keyboard.RIGHT);
+game.input.add.button('DOWN', Tetryon.Keyboard.DOWN);
+game.input.add.button('LEFT', Tetryon.Keyboard.LEFT);
+//
+
 game.resources.characters = {
   cache: {},
   get: function(name) {
@@ -52,6 +59,8 @@ var AVATARS = ['ninja1', 'wizard1', 'templar1', 'adventurer_m1', 'adventurer_f1'
 AVATARS.forEach(function(name) {
   game.resources.characters.load(name);
 });
+
+game.resources.load('map', 'assets/map.txt')
 
 game.resources.onReady(function() {
   game.canvas = document.createElement('canvas');
@@ -160,10 +169,43 @@ game.engine.addSystems({
 
   render: {
     dependencies: ['transform', 'sprite'],
+
+    init: function() {
+
+    },
+
+    drawCell: function(x, y, z, color) {
+
+    },
+
+    generateMapImage: function() {
+      // if map is dyanmic check for changes
+
+      // only one map now
+      var mapTxt = game.resources.get('map').trim();
+      var mapContent = mapTxt.split('\n');
+      var mapHeight = mapContent.length;
+      var mapWidth = mapContent[0].length;
+
+      // var xScale = game.canvas.width/mapWidth;
+      // var yScale = game.canvas.height/mapHeight;
+
+
+    },
+
+    renderMap: function() {
+      if (!this.mapImage) {
+        this.generateMapImage();
+      }
+      this.ctx.drawImage(this.mapImage, 0, 0);
+    },
+
     before: function(_) {
       this.ctx = game.canvas.getContext('2d');
       this.ctx.clearRect(0, 0, game.canvas.width, game.canvas.height);
+      this.renderMap();
     },
+
     each: function(entity) {
       var t = entity.get('transform');
       var s = entity.get('sprite');
@@ -191,11 +233,9 @@ game.engine.addSystems({
   }
 })
 
-
-
 function init() {
   var scale = 2;
-  var numCharacters = 400;
+  var numCharacters = 0;
   var minVelocity = -80;
   var maxVelocity = 80;
 

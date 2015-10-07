@@ -8,6 +8,44 @@ Object.copy = function(obj) {
   return newObj;
 }
 
+function Color(r, g, b) {
+  this.r = r;
+  this.g = g;
+  this.b = b;
+}
+
+Color.prototype.toString = function() {
+  if (!this.hexString) {
+    function toHex(n) {
+      var str = n.toString(16);
+      return str.length == 1 ? "0" + str : str;
+    }
+    this.hexString = "#" + toHex(this.r) + toHex(this.g) + toHex(this.b);
+  }
+  return this.hexString;
+}
+
+Color.prototype.darken = function(pct) {
+  if (!pct) { return this; }
+  var cof = pct/100;
+  function mul(val) {
+    var nval = Math.round(val * cof);
+    return nval < 0 ? 0 : nval > 255 ? 255 : nval;
+  }
+  return new Color(mul(this.r), mul(this.g), mul(this.b));
+}
+
+Color.prototype.lighten = function(pct) {
+  if (!pct) { return this; }
+  var cof = pct/100;
+  function mul(val) {
+    var nval = val + Math.round(val * cof);
+    return nval < 0 ? 0 : nval > 255 ? 255 : nval;
+  }
+  return new Color(mul(this.r), mul(this.g), mul(this.b));
+}
+
+
 function randomFloat(min, max) {
   if (max == null) {
     max = min; min = 0;
